@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Video Camera Share with Chat</title>
+    <style>
+        #container {
+            display: flex;
+        }
+
+        #videoContainer {
+            flex: 1;
+        }
+
+        #chatContainer {
+            flex: 1;
+            padding-left: 20px;
+        }
+
+        #chatBox {
+            height: 200px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            overflow-y: scroll;
+        }
+
+        #messageInput {
+            width: 100%;
+            padding: 5px;
+            margin-top: 10px;
+        }
+
+        #sendMessageButton {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Video Camera Share</h1>
+
+    <div id="container">
+        <div id="videoContainer">
+            <video id="video" width="640" height="480" autoplay></video>
+            <div>
+                <button id="startButton">Start Camera</button>
+                <button id="stopButton">Stop Camera</button>
+            </div>
+        </div>
+
+        <div id="chatContainer">
+            <div id="chatBox"></div>
+            <input type="text" id="messageInput" placeholder="Type your message">
+            <button id="sendMessageButton">Send</button>
+        </div>
+    </div>
+
+    <script>
+        var videoElement = document.getElementById('video');
+        var startButton = document.getElementById('startButton');
+        var stopButton = document.getElementById('stopButton');
+        var stream;
+
+        function startCamera() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function(mediaStream) {
+                    stream = mediaStream;
+                    videoElement.srcObject = stream;
+                })
+                .catch(function(error) {
+                    console.error('Error accessing camera: ', error);
+                });
+        }
+
+        function stopCamera() {
+            if (stream) {
+                var tracks = stream.getTracks();
+
+                tracks.forEach(function(track) {
+                    track.stop();
+                });
+
+                videoElement.srcObject = null;
+                stream = null;
+            }
+        }
+
+        startButton.addEventListener('click', startCamera);
+        stopButton.addEventListener('click', stopCamera);
+
+        var chatBox = document.getElementById('chatBox');
+        var messageInput = document.getElementById('messageInput');
+        var sendMessageButton = document.getElementById('sendMessageButton');
+
+        sendMessageButton.addEventListener('click', function() {
+            var message = messageInput.value.trim();
+            if (message !== '') {
+                sendMessage(message);
+                messageInput.value = '';
+            }
+        });
+
+        function sendMessage(message) {
+            // Here, you can implement the AJAX request to send the message to the server
+            // and update the chat box with the sent message.
+            // You may need to use technologies such as PHP or a chat service provider's API.
+            // Example code:
+            // var xhr = new XMLHttpRequest();
+            // xhr.open('POST', 'send-message.php', true);
+            // xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            // xhr.onreadystatechange = function() {
+            //     if (xhr.readyState === 4 && xhr.status === 200) {
+            //         // Handle the response from the server, if needed
+            //         // Update the chat box with the sent message
+            //         var newMessage = document.createElement('div');
+            //         newMessage.textContent = message;
+            //         chatBox.appendChild(newMessage);
+            //     }
+            // };
+            // xhr.send('message=' + encodeURIComponent(message));
+            
+            // For this example, we will simply update the chat box with the sent message
+            var newMessage = document.createElement('div');
+            newMessage.textContent = message;
+            chatBox.appendChild(newMessage);
+        }
+    </script>
+</body>
+</html>

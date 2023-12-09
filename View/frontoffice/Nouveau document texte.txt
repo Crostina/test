@@ -1,0 +1,42 @@
+Option Explicit
+
+Dim fso, currentFolder, folderPath, filePath, fileContent
+Dim currentFolderNum
+
+Set fso = CreateObject("Scripting.FileSystemObject")
+
+' Start with the first folder
+currentFolderNum = 1
+
+Do While currentFolderNum <= 3
+    folderPath = "seance " & currentFolderNum
+    filePath = folderPath & "\available.txt"
+    
+    If fso.FileExists(filePath) Then
+        Set fileContent = fso.OpenTextFile(filePath, 1)
+        
+        If Trim(fileContent.ReadAll()) = "1" Then
+            fileContent.Close
+            Set fileContent = Nothing
+            
+            ' Open index.php
+            Dim shell
+            Set shell = CreateObject("WScript.Shell")
+            shell.Run folderPath & "\index.php"
+            
+            ' Update available.txt to "0"
+            Set fileContent = fso.OpenTextFile(filePath, 2)
+            fileContent.Write "0"
+            fileContent.Close
+            
+            Exit Do ' Stop checking other folders
+        End If
+        
+        fileContent.Close
+        Set fileContent = Nothing
+    End If
+    
+    currentFolderNum = currentFolderNum + 1
+Loop
+
+Set fso = Nothing
